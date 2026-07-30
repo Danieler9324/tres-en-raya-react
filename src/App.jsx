@@ -71,9 +71,12 @@ function Board({ xIsNext, squares, onPlay }) {
   }
 
   const winner = calculateWinner(squares);
+  const isDraw = !winner && squares.every((square) => square !== null);
   let status;
   if (winner) {
     status = 'Ganador: ' + winner.player;
+  }else if (isDraw) {
+    status = 'Empate, nadie gano'
   } else {
     status = 'Siguiente Jugador: ' + (xIsNext ? 'X' : 'O');
   }
@@ -115,12 +118,17 @@ function Square({value, onSquareClick, isWinningSquare}) {
 
 function calculateWinner(squares) {
   const lines = [
+    // filas
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
+
+    // columnas
     [0, 3, 6],
     [1, 4, 7],
     [2, 5, 8],
+
+    // diagonales
     [0, 4, 8],
     [2, 4, 6]
   ];
