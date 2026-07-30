@@ -1,14 +1,18 @@
 import {useState} from 'react';
 
 export default function Game () {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState([
+    { squares: Array(9).fill(null), location: null}
+    ]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isAscending,setIsAscending] = useState(true);
   const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove].squares;
 
-  function handlePlay(nextSquares) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+  function handlePlay(nextSquares, squareIndex) {
+    const col = (squareIndex % 3) + 1;
+    const row = Math.floor(squareIndex / 3) + 1;
+    const nextHistory = [...history.slice(0, currentMove + 1), {squares: nextSquares, location: {row, col}}];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
@@ -17,11 +21,12 @@ export default function Game () {
     setCurrentMove(nextMove);
   }
 
-  const moves = history.map((squares, move) => {
+  const moves = history.map((step, move) => {
+    const {location} = step;
+    const locText = location ? `fila: (${location.row}), col (${location.col})` : '';
     let content;
-    let order;
     if (move === currentMove) {
-      content = move > 0 ? "Estas en el movimiento #" + move : "Estas en el inicio del juego";
+      content = move > 0 ? `Estas en el movimiento #${move} ${locText}` : "Estas en el inicio del juego";
     } else {
       const description = move > 0 ? "Ir al movimiento #" + move : "Ir al inicio del juego";
       content = <button onClick={() => jumpTo(move)}>{description}</button>
@@ -45,7 +50,6 @@ export default function Game () {
     </div>
     <div className="game-info">
       <button onClick={() => setIsAscending(!isAscending)}>{isAscending ? "Ordenar descendente" : "Ordenar Ascendente"}</button>
-
       <ol>{moves}</ol>
     </div>
   </div>
@@ -63,7 +67,7 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares, i);
   }
 
   const winner = calculateWinner(squares);
