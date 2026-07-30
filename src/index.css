@@ -3,3 +3,7 @@
     height: 100px;
     font-size: 2rem;
 }
+
+.winning {
+    background-color: lightgreen;
+}
